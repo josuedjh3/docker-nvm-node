@@ -1,19 +1,21 @@
 FROM alpine:latest as base
 
-# Install the packages-tools
 RUN set -eux \
-  && apk add --no-cache --virtual .build-deps \
-    gosu \
-    tini
+# Packages from testing
+    && apk add \
+        --no-cache \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+# Docker tools
+        gosu \
+        tini
 
 # Install the packages
 RUN set -eux \
     && apk add --no-cache --virtual .build-deps \
         ca-certificates \
         curl \
-        bash \
-        && rm -rf /var/cache/apk/*
- \
+        bash
+
     # Created user and group app
 RUN set -eux \
     && addgroup -g 1000 app \
@@ -22,8 +24,10 @@ RUN set -eux \
     && mkdir -p /app \
     && chown -R app:app /app
 
-WORKDIR /app
+WORKDIR /home/app
 
-COPY docker-entrypoint.sh /sbin/docker-entrypoint.sh
+COPY entrypoint-base.sh /sbin/docker-entrypoint.sh
 
 ENTRYPOINT ["tini", "--", "/sbin/docker-entrypoint.sh"]
+
+EXPOSE 3030

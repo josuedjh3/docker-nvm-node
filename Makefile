@@ -1,5 +1,10 @@
 .PHONY: build
 build:
 	docker build \
-	--targer base \
-	--tag
+	--target base \
+	--tag josuedjhcayola/docker-nvm-node:lastest \
+	.
+
+.PHONY: frontend
+frontend:
+	docker-compose run --rm --service-ports --use-aliases frontend bash
